@@ -27,6 +27,8 @@ async function run() {
     // await client.connect();
 
     const userCollection = client.db("furniFlex").collection("user");
+    const productCollection = client.db("furniFlex").collection("product");
+    const cartCollection = client.db("furniFlex").collection("cart");
 
     // jwt api
     app.post("/jwt", async (req, res) => {
@@ -35,6 +37,41 @@ async function run() {
         expiresIn: "1h",
       });
       res.send({ token });
+    });
+
+    // user api
+    app.post("/user", async (req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+    app.get("/user", async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
+    // product api
+    app.get("/product", async (req, res) => {
+      const result = await productCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/product", async (req, res) => {
+      const productItem = req.body;
+      const result = await productCollection.insertOne(productItem);
+      res.send(result);
+    });
+
+    // cart api
+    app.post("/cart", async (req, res) => {
+      const cartItem = req.body;
+      const result = await cartCollection.insertOne(cartItem);
+      res.send(result);
+    });
+
+    app.get("/cart", async (req, res) => {
+      const result = await cartCollection.find().toArray();
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
