@@ -29,6 +29,7 @@ async function run() {
     const userCollection = client.db("furniFlex").collection("user");
     const productCollection = client.db("furniFlex").collection("product");
     const cartCollection = client.db("furniFlex").collection("cart");
+    const checkoutCollection = client.db("furniFlex").collection("checkout");
 
     // jwt api
     app.post("/jwt", async (req, res) => {
@@ -70,7 +71,26 @@ async function run() {
     });
 
     app.get("/cart", async (req, res) => {
-      const result = await cartCollection.find().toArray();
+      const email = req.query.email;
+      let query = {};
+      if (email) {
+        query.email = email;
+      }
+      const result = await cartCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.delete("/cart/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await cartCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // checkout api
+    app.post("/checkout", async (req, res) => {
+      const checkoutItem = req.body;
+      const result = await checkoutCollection.insertOne(checkoutItem);
       res.send(result);
     });
 
